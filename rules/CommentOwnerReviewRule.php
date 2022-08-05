@@ -14,7 +14,7 @@ class CommentOwnerReviewRule extends Rule
      */
     public function execute($user, $item, $params): bool
     {
-        $review = ArrayHelper::getValue($params, 'review');
+        $review = ArrayHelper::getValue($params, 'reviews');
 
         return $review['user_id'] == $user;
     }

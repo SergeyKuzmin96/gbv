@@ -24,7 +24,7 @@ return [
         'urlManager' => [
             'showScriptName' => true,
         ],
-        'user' => [
+        'users' => [
             'identityClass' => 'app\modules\auth\models\User',
         ],
         'request' => [

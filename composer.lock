@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d6636f02cb30facb5f920a1844b8e11",
+    "content-hash": "ceda6849a6c1b62dae6c9f982579c156",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -1736,6 +1736,101 @@
                 }
             ],
             "time": "2022-05-24T11:49:31+00:00"
+        },
+        {
+            "name": "w3lifer/php-helper",
+            "version": "4.7.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/w3lifer/php-helper.git",
+                "reference": "76746d3a8e4d218858f03aa226d3d6413e2d7b43"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/w3lifer/php-helper/zipball/76746d3a8e4d218858f03aa226d3d6413e2d7b43",
+                "reference": "76746d3a8e4d218858f03aa226d3d6413e2d7b43",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-simplexml": "*",
+                "ext-zip": "*",
+                "php": "^7.0|^8.0"
+            },
+            "require-dev": {
+                "codeception/codeception": "^2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "w3lifer\\phpHelper\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Grinyov",
+                    "email": "w3lifer@gmail.com"
+                }
+            ],
+            "description": "Some set of methods ...",
+            "keywords": [
+                "helper",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/w3lifer/php-helper/issues",
+                "source": "https://github.com/w3lifer/php-helper/tree/4.7.5"
+            },
+            "time": "2021-05-12T21:36:51+00:00"
+        },
+        {
+            "name": "w3lifer/yii2-i18n-js",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/w3lifer/yii2-i18n-js.git",
+                "reference": "0e5acf305c40d8f00f2eac3c88dd0c3b8a583965"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/w3lifer/yii2-i18n-js/zipball/0e5acf305c40d8f00f2eac3c88dd0c3b8a583965",
+                "reference": "0e5acf305c40d8f00f2eac3c88dd0c3b8a583965",
+                "shasum": ""
+            },
+            "require": {
+                "w3lifer/php-helper": "^4",
+                "yiisoft/yii2": "^2"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "w3lifer\\yii2\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Grinyov",
+                    "email": "w3lifer@gmail.com"
+                }
+            ],
+            "keywords": [
+                "JS",
+                "i18n",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/w3lifer/yii2-i18n-js/issues",
+                "source": "https://github.com/w3lifer/yii2-i18n-js/tree/master"
+            },
+            "time": "2018-06-21T20:23:31+00:00"
         },
         {
             "name": "yiisoft/yii2",

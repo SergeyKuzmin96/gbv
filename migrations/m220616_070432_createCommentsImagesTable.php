@@ -23,6 +23,8 @@ class m220616_070432_createCommentsImagesTable extends Migration
             'path' => $this->string()->notNull(),
             'date_add' => $this->timestamp()->notNull()
                 ->defaultExpression('CURRENT_TIMESTAMP'),
+            'date_update' => $this->timestamp()->notNull()
+                ->defaultExpression('CURRENT_TIMESTAMP'),
         ], $table_options);
 
         $this->addForeignKey('fk_comments_images',

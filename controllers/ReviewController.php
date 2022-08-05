@@ -2,86 +2,127 @@
 
 namespace app\controllers;
 
-use app\base\BaseController;
-use app\models\Images;
-use app\models\Review;
+use app\components\CommentsComponent;
+use app\components\ReviewsComponent;
+use app\models\Reviews;
+use Exception;
+use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\helpers\Url;
+use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
-class ReviewController extends BaseController
+class ReviewController extends Controller
 {
     /**
-     * @throws HttpException
+     * @throws InvalidConfigException
      */
     public function actionCreate()
     {
 
-        if (!(\Yii::$app->user->isGuest)) {
-            if (!(\Yii::$app->rbac->canCreateReview())) {
-                throw new HttpException('403', 'Отзывы могут оставлять только зарегестрированные пользователи!');
-            }
-            /** @var Review $model
-             * @var Images $model_img
+        if (!(Yii::$app->user->isGuest)) {
+
+            /** @var Reviews $model
              */
+            $component = new ReviewsComponent();
+            $model = $component->getModel();
 
-            $model = \Yii::$app->review->getModel();
-            $model_img = \Yii::$app->images->getModel();
+            if (Yii::$app->request->isPost) {
+                $model = $component->getModel(Yii::$app->request->post());
 
-            if (\Yii::$app->request->isPost) {
-                $model = \Yii::$app->review->getModel(\Yii::$app->request->post());
-                $model_img = \Yii::$app->images->getModel(\Yii::$app->request->post());
-                if (\Yii::$app->review->createComment($model, $model_img)) {
-                    return $this->redirect(['review/all']);
+                if ($component->createComment($model)) {
+                    return $this->redirect(Url::to(['/review/all']));
                 }
             }
-            return $this->render('create', ['model' => $model, 'model_img' => $model_img]);
+            return $this->render('create', ['model' => $model]);
         }
-        return $this->redirect(['auth/authentication/signin']);
+        return $this->redirect(['authentication/signin']);
     }
 
-
     /**
-     * @throws \Exception
+     * @throws Exception
      */
+
     public function actionAll()
     {
-        $component = \Yii::$app->review;
-        $response = [];
-        if (\Yii::$app->request->isAjax) {
-            $data = \Yii::$app->request->post();
+        $component = new ReviewsComponent();
+
+        if (Yii::$app->request->isAjax) {
+
+            $data = Yii::$app->request->post();
             $count = ArrayHelper::getValue($data, 'count');
-            $reviews = $component->getReviewsByCount($count);
+            $countAll = $component->getCountReviews();
 
-            $response = [
-                'status' => true,
-                'reviews' => $reviews,
-                'message' => 'Успешный вывод отзывов'
-            ];
-            return Json::encode($response);
-        } else {
-            $response = [
-                'status' => false,
-                'reviews' => $response,
-                'message' => 'Ошибка получения отзывов'
-            ];
+            if($countAll >= $count || ($count - $countAll > 0 && $count - $countAll < 5)){
+                $reviews = $component->getReviewsByCountAjax($count,true);
 
-            return $this->render('all', ['response' => $response]);
+                $data = [
+                    'status' => true,
+                    'reviews' => $reviews,
+                    'message' => Yii::t('app','Reviews received'),
+//                    'counts' => true,
+                ];
+                return Json::encode($data);
+            }else{
+
+                $data = [
+                    'status' => true,
+                    'reviews' => null,
+                    'message' => Yii::t('app','No more reviews'),
+//                    'counts' => true,
+                ];
+                return Json::encode($data);
+            }
+
         }
+//        $reviews = $component->getReviewsByCount($count, false);
+        $reviews = $component->getReviewsByPost();
+
+        return $this->render('all', ['reviews' => $reviews]);
+
     }
 
-    /**
-     * @throws NotFoundHttpException
-     */
+//    /**
+//     * @throws Exception
+//     */
+//
+//    public function actionAll()
+//    {
+//        $component = new ReviewsComponent();
+//        if (Yii::$app->request->isAjax) {
+//            $data = Yii::$app->request->post();
+//            $count = ArrayHelper::getValue($data, 'count');
+//            $reviews = $component->getReviewsByCount($count,true);
+////            $reviews = $component->getReviewsByCountAsArray($count);
+//
+//            if ((count($reviews) % 5 == 0) && (count($reviews) > 0)) {
+//                $data = [
+//                    'status' => true,
+//                    'reviews' => $reviews,
+//                    'message' => 'Feedback received',
+//                    'counts' => true,
+//                ];
+//                return Json::encode($data);
+//            } else {
+//                $data = [
+//                    'status' => true,
+//                    'reviews' => $reviews,
+//                    'message' => 'Feedback received',
+//                    'counts' => false,
+//                ];
+//                return Json::encode($data);
+//            }
+//
+//        }
+//        $count = 0;
+//        $reviews = $component->getReviewsByCount($count, false);
+////        $reviews = $component->getReviewsByCountAsModel($count);
+//
+//        return $this->render('all', ['reviews' => $reviews]);
+//
+//    }
 
-
-    public function actionIndex($id): string
-    {
-        $comp = \Yii::$app->review;
-        $review = $comp->getReviewById($id);
-        \Yii::$app->session->set('review_id', $id);
-        \Yii::$app->session->set('review', $review);
-        return $this->render('index', ['model' => $review]);
-    }
 }

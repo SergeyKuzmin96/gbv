@@ -23,6 +23,8 @@ class m220608_174309_createTableReviews extends Migration
             'message' => $this->string()->notNull(),
             'date_add' => $this->timestamp()->notNull()
                 ->defaultExpression('CURRENT_TIMESTAMP'),
+            'date_update' => $this->timestamp()->notNull()
+                ->defaultExpression('CURRENT_TIMESTAMP'),
         ], $table_options);
 
         $this->addForeignKey('fk_user_reviews',

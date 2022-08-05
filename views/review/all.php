@@ -1,91 +1,112 @@
 <?php
 
+/* @var $reviews Reviews
+ * @var $count integer
+ */
 
-/* @var $this \yii\web\View */
-
-/* @var $data array */
-
+use app\models\Reviews;
+use yii\bootstrap4\Modal;
+use yii\widgets\Pjax;
 use yii\bootstrap4\Html;
 use yii\helpers\Url;
-use yii\widgets\Pjax;
+use yii\web\JqueryAsset;
 
 ?>
 
-<?php Pjax::begin([
-    'enablePushState' => false,
-    'timeout' => 7000,
-]); ?>
-    <a href="create" class="btn btn-xs btn-primary">Оставить отзыв</a>
-<?php Pjax::end(); ?>
-    <br>
-    <hr>
-    <div class="container">
-        <form class="form">
-            <h3>Отзывы пользователей</h3>
-            <?= Html::submitButton("Получить", ['class' => "btn-info"]); ?>
-        </form>
-    </div>
-    <br>
-    <hr>
+
 <?php Pjax::begin([
     'enablePushState' => false,
     'timeout' => 10000,
 ]); ?>
-
-<? //=print_r($data); ?>
-    <div id="reviews">
-
-    </div>
-<?php Pjax::end(); ?>
-
-
-<?php
-$url = Url::to(['review/all']);
-$script = <<< JS
-$(document).ready(function(){
-    
-    let count = 0;
-    $('.form').submit(function(event) {
-        event.preventDefault();
-        $('#reviews').html('');
-        count = count + 2;
-        $.ajax({
-            url: '$url',
-            type: 'POST',
-            dataType: 'json',
-            data:{
-                count : count
-            },
-            success (data){
-                if (data.status){
-                    let layout = '';
-                    for (let i = 0; i < data.reviews.length; i++){
-                        let images = '';
-                        for (let j = 0; j< data.reviews[i].reviewsImages.length; j++){
-                            images += `<li><img src="/images/`+data.reviews[i].reviewsImages[j].path+`" width="150" height="120"></li>`
-                        }
-                    layout += `
-<div>
-    <p>Номер отзыва: `+data.reviews[i].id+`</p>
-    <p>Автор: `+data.reviews[i].user.email+`</p>
-    <p>Сообщени:<strong>`+data.reviews[i].message+`</strong></p>
-    <ul>                    
-    `+images+`
-    </ul>
-    <br>
-    <div>
-    <a href="/review/?id=`+data.reviews[i].id+`" class="btn btn-success">Комментарии</a>
-    </div>
+<?php if (!Yii::$app->user->isGuest): ?>
+    <?= Html::a(Yii::t('app', 'Leave review'), ['review/create'], ['class' => 'btn btn-xs btn-outline-primary']) ?>
     <hr>
+<?php endif; ?>
+<?php Pjax::end(); ?>
+<br>
+
+<?php Pjax::begin([
+    'enablePushState' => false,
+]); ?>
+
+<div class ="parent" id="reviews" data-count= "<?= count($reviews) ?>">
+
+    <?php if (count($reviews) == 0): ?>
+        <h3><?php echo Yii::t('app', 'No reviews have been left so far') ?></h3>
+    <?php else: ?>
+        <h3><?php echo Html::tag('strong', Yii::t('app', 'Reviews')) . ' : ' ?></h3>
+        <hr>
+        <hr>
+    <?php endif; ?>
+
+    <?php foreach ($reviews as $review): ?>
+        <div class="border border-success">
+            <?= Html::tag('p', Html::tag('strong', '№ ' . $review->id)) ?>
+            <?= Html::tag('p', Html::tag('strong', Yii::t('app', 'Author')) . ' : ' . $review->users->email) ?>
+            <p><?php echo Html::tag('strong', Yii::t('app', 'Review')) . ' : ' ?><?= Html::encode($review->message) ?> </p>
+
+            <?php $images = $review->reviewsImages; ?>
+            <?php if (!empty($images)): ?>
+                <?php foreach ($images as $image): ?>
+                    <ul>
+                        <li><?= Html::img('/images/' . $image->path, ['width' => 150, 'height' => 120]) ?></li>
+                    </ul>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            <hr>
+            <div class="add_comment" data-content="<?= $review->id ?>">
+                <?php if ((\Yii::$app->authManager->checkAccess(\Yii::$app->user->id, 'admin')) || (Yii::$app->user->id == $review->users->id)): ?>
+                    <?= Html::a(Yii::t('app', 'Add Comment'), ['comments/create', 'id' =>$review->id], ['class' => 'btn btn-xs btn-outline-primary']) ?>
+
+                <?php endif; ?>
+            </div>
+            <br>
+            <hr>
+            <div class = "comments"  data-content="<?= $review->id ?>" data-count= "0">
+
+            </div>
+            <br>
+            <button class="btn get_comments btn-outline-info"
+                    id="get_comments" data-attr="<?= $review->id ?>"
+                    type="button">
+                <?php echo Yii::t('app','Comments') ?>
+            </button>
+
+        </div>
+        <hr>
+        <hr>
+    <?php endforeach; ?>
 </div>
-                    `;}
-                    $('#reviews').append(layout);
-                    console.log(data);                
-            }
-            }
-            })
-        });
-    });
-JS;
-$this->registerJs($script);
+<?php Pjax::end(); ?>
+<br>
+<?php if (count($reviews) == 5): ?>
+    <div class="container">
+        <form class="form">
+            <button class="btn btn-outline-info" id="review"
+                    type="submit"><?php echo Yii::t('app', 'More reviews') ?></button>
+        </form>
+    </div>
+<?php endif; ?>
+<?php
+$this->registerJsFile(
+    '@web/js/test.js',
+    ['depends' => 'yii\web\YiiAsset',
+        'yii\bootstrap4\BootstrapAsset',
+    ]
+);
+//$this->registerJsFile(
+//    '@web/js/reviewsAll.js',
+//    ['depends' => 'yii\web\YiiAsset',
+//        'yii\bootstrap4\BootstrapAsset',
+//    ]
+//);
+
+$this->registerJsFile(
+    '@web/js/getComments.js',
+    ['depends' => 'yii\web\YiiAsset',
+        'yii\bootstrap4\BootstrapAsset',
+    ]
+);
 ?>
+
+

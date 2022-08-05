@@ -24,6 +24,8 @@ class m220616_065613_createCommentsTable extends Migration
             'message' => $this->string()->notNull(),
             'date_add' => $this->timestamp()->notNull()
                 ->defaultExpression('CURRENT_TIMESTAMP'),
+            'date_update' => $this->timestamp()->notNull()
+                ->defaultExpression('CURRENT_TIMESTAMP'),
         ], $table_options);
 
         $this->addForeignKey('fk_user_comments',

@@ -22,18 +22,17 @@ class m220606_071208_createTableUsers extends Migration
             'email' => $this->string()->notNull()->unique(),
             'password_hash' => $this->string(300)->notNull(),
             'auth_key' => $this->string(150),
-            'token' => $this->string(150)->unique(),
             'date_add' => $this->timestamp()->notNull()
+                ->defaultExpression('CURRENT_TIMESTAMP'),
+            'date_update' => $this->timestamp()->notNull()
                 ->defaultExpression('CURRENT_TIMESTAMP'),
         ], $table_options);
 
-        $password = '123456';
-        $email = 'admin@site.ru';
 
         $this->insert('users',[
             'id' => 1,
-            'email' => $email,
-            'password_hash' => Yii::$app->security->generatePasswordHash($password)
+            'email' => 'admin@site.ru',
+            'password_hash' => Yii::$app->security->generatePasswordHash('123456')
         ]);
     }
 

@@ -2,80 +2,115 @@
 
 namespace app\controllers;
 
-use app\base\BaseController;
-use app\models\Comment;
-use app\models\Images;
-use app\models\Review;
+use app\components\CommentsComponent;
+use app\models\Comments;
+use app\models\Reviews;
 use Exception;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+use yii\helpers\Url;
+use yii\web\Controller;
 use yii\web\HttpException;
 
-class CommentsController extends BaseController
+class CommentsController extends Controller
 {
     /**
      * @throws HttpException
+     * @throws InvalidConfigException
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
         if (!(Yii::$app->user->isGuest)) {
 
-            $review = Yii::$app->session->get('review');
-            if (!(\Yii::$app->rbac->canAddComment($review))) {
+            $review = Reviews::find()->andFilterWhere(['id' => $id])->asArray()->one();
+            if (!(Yii::$app->rbac->canAddComment($review))) {
 
-                throw new HttpException('403', 'Вы можете комментировать только свои отзывы!');
+                throw new HttpException('403', Yii::t('app', 'You do not have enough rights to leave comments') . '!');
             }
-            /** @var Comment $model
-             * @var Images $model_img
-             * @var Review $review
+            /** @var Comments $model
+             * @var Reviews $review
              */
 
-            $model = Yii::$app->comment->getModel();
-            $model_img = Yii::$app->images->getModel();
+            $component = new CommentsComponent();
+            $model = $component->getModel();
 
             if (Yii::$app->request->isPost) {
 
-                $model = Yii::$app->comment->getModel(Yii::$app->request->post());
-                $model->review_id = $review['id'];
-                $model_img = Yii::$app->images->getModel(Yii::$app->request->post());
-                if (Yii::$app->comment->createComment($model, $model_img)) {
+                $model = $component->getModel(Yii::$app->request->post());
+                $model->review_id = $id;
+                if ($component->createComment($model)) {
+                    return $this->redirect(Url::to(['/review/all']));
 
-                    return $this->redirect(['review/view']);
                 }
             }
-            return $this->render('create', ['model' => $model, 'model_img' => $model_img]);
+            return $this->render('create', ['model' => $model]);
         }
-        return $this->redirect(['auth/authentication/signin']);
+        return $this->redirect(['authentication/signin']);
     }
-
 
     /**
      * @throws Exception
      */
-    public function actionAll(): string
+    public function actionAll()
     {
         if (Yii::$app->request->isAjax) {
 
             $post = Yii::$app->request->post();
             $count = ArrayHelper::getValue($post, 'count');
-            $review = Yii::$app->session->get('review');
-            $review_id = $review['id'];
-            $comments = Yii::$app->comment->getAllCommentsByReviewAndCount($review_id, $count);
+            $review_id = ArrayHelper::getValue($post, 'review_id');
 
-            $data = [
-                'status' => true,
-                'comments' => $comments,
-                'message' => 'Comments received'
-            ];
-        } else {
+            $component = new CommentsComponent();
+            $countAll = $component->getCountCommentsByReview($review_id);
 
-            $data = [
-                'status' => false,
-                'comment' => null,
-                'message' => 'An error occurred'
-            ];
+            if (($count > 5 && $countAll == 0) || (($count - $countAll) >= 5 && $countAll > 0)) {
+                $data = [
+                    'status' => false,
+                    'comments' => null,
+                    'message' => Yii::t('app', 'Comments'),
+                    'counts' => true,
+                ];
+                return Json::encode($data);
+            } else {
+
+                if ($countAll == 0) {
+
+                    $data = [
+                        'status' => false,
+                        'comments' => null,
+                        'message' => Yii::t('app', 'This reviews has not yet been commented on'),
+                        'counts' => false,
+                    ];
+                    return Json::encode($data);
+
+                } else {
+
+                    $comments = $component->getAllCommentsByReviewAndCount($review_id, $count);
+
+                    if ((($countAll % 5 === 0) && $countAll === $count) || (($count - $countAll < 5) && ($count - $countAll > 0))) {
+
+                        $data = [
+                            'status' => true,
+                            'comments' => $comments,
+                            'message' => Yii::t('app', 'No more comments'),
+                            'counts' => false,
+                        ];
+                        return Json::encode($data);
+
+                    } else {
+                        $data = [
+                            'status' => true,
+                            'comments' => $comments,
+                            'message' => Yii::t('app', 'More comments'),
+                            'counts' => true,
+                        ];
+                        return Json::encode($data);
+                    }
+                }
+            }
+
         }
-        return Json::encode($data);
     }
+
 }

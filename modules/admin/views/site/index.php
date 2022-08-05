@@ -125,7 +125,7 @@ $this->params['breadcrumbs'] = [['label' => $this->title]];
             <?= \hail812\adminlte\widgets\SmallBox::widget([
                 'title' => '44',
                 'text' => 'User Registrations',
-                'icon' => 'fas fa-user-plus',
+                'icon' => 'fas fa-users-plus',
                 'theme' => 'gradient-success',
                 'loadingStyle' => true
             ]) ?>

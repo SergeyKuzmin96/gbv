@@ -4,10 +4,10 @@ namespace app\components;
 
 use app\rules\CommentOwnerReviewRule;
 use Yii;
-use yii\base\Component;
+use yii\base\BaseObject;
 use yii\rbac\ManagerInterface;
 
-class RbacComponent extends Component
+class RbacComponent extends BaseObject
 {
     /**
      * @return ManagerInterface
@@ -27,7 +27,7 @@ class RbacComponent extends Component
         $authManager->removeAll();
 
         $admin = $authManager->createRole('admin');
-        $user = $authManager->createRole('user');
+        $user = $authManager->createRole('users');
 
         $authManager->add($admin);
         $authManager->add($user);
@@ -67,7 +67,7 @@ class RbacComponent extends Component
         if (Yii::$app->user->can('adminAccess')) {
             return true;
         }
-        if (Yii::$app->user->can('add_comment', ['review' => $review])) {
+        if (Yii::$app->user->can('add_comment', ['reviews' => $review])) {
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ class RbacComponent extends Component
     public function setUserRole($id)
     {
         $auth_manager = $this->getAuthManager();
-        $user = $auth_manager->getRole('user');
+        $user = $auth_manager->getRole('users');
         if ($user != null) {
             $auth_manager->assign($user, $id);
         }

@@ -1,7 +1,7 @@
 <?php
 
-use app\modules\auth\components\AuthComponent;
-use app\modules\auth\models\User;
+use app\components\AuthComponent;
+use app\models\Users;
 use kartik\datecontrol\Module;
 
 $params = require __DIR__ . '/params.php';
@@ -11,23 +11,20 @@ $db = file_exists(__DIR__ . '/db_local.php')
 
 $config = [
     'name' => 'Гостевая книга',
-    'homeUrl'=>array('review/all'),
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'language' => 'ru-RU',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
     ],
     'modules' => [
-        'auth' => [
-            'class' => \app\modules\auth\Module::class
-        ],
         'admin' => [
             'class' => \app\modules\admin\Module::class,
             'layout' => 'main'
         ],
-        'datecontrol' =>  [
+        'datecontrol' => [
             'class' => kartik\datecontrol\Module::class,
 
             // format settings for displaying each date attribute (ICU format example)
@@ -58,7 +55,7 @@ $config = [
 
             // default settings for each widget from kartik\widgets used when autoWidget is true
             'autoWidgetSettings' => [
-                Module::FORMAT_DATE => ['type'=>2, 'pluginOptions'=>['autoclose'=>true]], // example
+                Module::FORMAT_DATE => ['type' => 2, 'pluginOptions' => ['autoclose' => true]], // example
                 Module::FORMAT_DATETIME => [], // setup if needed
                 Module::FORMAT_TIME => [], // setup if needed
             ],
@@ -70,7 +67,7 @@ $config = [
                     'class' => 'yii\jui\DatePicker', // example
                     'options' => [
                         'dateFormat' => 'php:d-M-Y',
-                        'options' => ['class'=>'form-control'],
+                        'options' => ['class' => 'form-control'],
                     ]
                 ]
             ]
@@ -78,40 +75,26 @@ $config = [
         ]
     ],
     'components' => [
-//        'view' => [
-//            'theme' => [
-//                'pathMap' => [
-//                    '@app/views' => '@vendor/hail812/yii2-adminlte3/src/views'
-//                ],
-//            ],
-//        ],
+        'i18nJs' => [
+            'class' => 'w3lifer\yii2-i18n-js\I18nJs',
+        ],
+        'i18n' => [
+            'translations' => [
+                'app*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'fileMap' => [
+                        'app' => 'app.php'
+                    ],
+//                        'sourceLanguage' => 'en'
+                ]
+            ]
+        ],
 
         'authManager' => [
             'class' => \yii\rbac\DbManager::class
         ],
         'rbac' => ['class' => \app\components\RbacComponent::class],
-        'auth' => [
-            'class' => AuthComponent::class,
-            'model_class' => User::class,
-        ],
-        'review' => [
-            'class' => \app\components\ReviewComponent::class,
-            'model_class' => \app\models\Review::class,
-            'img_comp_class' => \app\components\ReviewImageComponent::class
-        ],
 
-        'image_loader'=>[
-            'class' => \app\components\ImageLoaderComponent::class
-        ],
-        'images'=>[
-            'class' => \app\components\ImagesComponent::class,
-            'model_class' => \app\models\Images::class
-        ],
-        'comment' => [
-            'class' => \app\components\CommentsComponent::class,
-            'model_class' => \app\models\Comment::class,
-            'img_comp_class' => \app\components\CommentImageComponent::class
-        ],
 
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -121,9 +104,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => User::class,
-
-//            'identityClass' => 'app\modules\auth\models\User',
+            'identityClass' => Users::class,
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
@@ -152,6 +133,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '/' => 'review/all',
             ],
         ],
 

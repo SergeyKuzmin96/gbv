@@ -2,57 +2,57 @@
 
 namespace app\components;
 
-use app\models\Images;
-use yii\base\Component;
+use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
+use yii\web\UploadedFile;
 
-abstract class CommentsSaveComponent extends Component
+abstract class CommentsSaveComponent extends BaseObject
 {
-    public $img_comp_class;
-    public $img_comp;
-    public $model_class;
-
-    /**
-     * @throws \Exception
-     */
-    public function init()
-    {
-        parent::init();
-
-        if (empty($this->img_comp_class)) {
-            throw new \Exception('Need img_comp_class param');
-        } elseif (empty($this->model_class)) {
-            throw new \Exception('Need model_class param');
-        } else {
-            $this->img_comp = \Yii::createObject([
-                'class' => $this->img_comp_class
-            ]);
-        }
-    }
 
     public function getModel($data = [])
     {
         $model = new $this->model_class;
         if ($data) {
             $model->load($data);
+            $model->images = UploadedFile::getInstances($model, 'images');
             $model->user_id = \Yii::$app->user->getId();
         }
         return $model;
     }
 
-
-    public function createComment($model, Images $model_img): bool
+    /**
+     * @throws InvalidConfigException
+     */
+    public function createComment($model): bool
     {
-        if (!$model->validate() || !$model_img->validate()) {
-            return false;
-        }
-        if (!$model->save()) {
-            return false;
-        } else {
+        if ($model->validate() && $model->save()) {
+            $component = new ImageLoaderComponent();
+            if ($component->loadImages($model)) {
 
-            if (\Yii::$app->image_loader->loadImages($model_img)) {
-                $this->img_comp->saveImages($model_img->images, $model->id);
+                $component->saveImages($model);
+                return true;
             }
         }
-        return true;
+        return false;
     }
+//    /**
+//     * @throws InvalidConfigException
+//     */
+//    public function createComment($model): bool
+//    {
+//        if (!$model->validate()) {
+//            return false;
+//        }
+//        if (!$model->save()) {
+//            return false;
+//        } else {
+//
+//            $component = \Yii::createObject(['class' => ImageLoaderComponent::class]);
+//            if ($component->loadImages($model)) {
+//
+//                $component->saveImages($model);
+//            }
+//        }
+//        return true;
+//    }
 }

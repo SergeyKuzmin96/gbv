@@ -10,8 +10,8 @@ use yii\bootstrap4\Html;
 use yii\bootstrap4\Nav;
 use yii\bootstrap4\NavBar;
 use kartik\icons\FontAwesomeAsset;
-FontAwesomeAsset::register($this);
 
+FontAwesomeAsset::register($this);
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -40,13 +40,13 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             Yii::$app->authManager->checkAccess(\Yii::$app->user->id, 'admin') ?(
-            ['label' => 'Панель администартора', 'url' => ['/admin/review']]
+            ['label' => 'Панель администартора', 'url' => ['/admin/reviews']]
             ) : (''),
             Yii::$app->user->isGuest ? (
-                ['label' => 'Вход', 'url' => ['/auth/authentication/signin']]
+                ['label' => 'Вход', 'url' => ['/authentication/signin']]
             ) : (
                 '<li>'
-                . Html::beginForm(['/auth/authentication/logout'], 'post', ['class' => 'form-inline'])
+                . Html::beginForm(['/authentication/logout'], 'post', ['class' => 'form-inline'])
                 . Html::submitButton(
                     'Выход (' . Yii::$app->user->identity->username . ')',
                     ['class' => 'btn btn-link logout']
@@ -72,10 +72,7 @@ AppAsset::register($this);
 </main>
 
 <footer class="footer mt-auto py-3 text-muted">
-    <div class="container">
-        <p class="float-left">&copy; My Company <?= date('Y') ?></p>
-        <p class="float-right"><?= Yii::powered() ?></p>
-    </div>
+
 </footer>
 
 <?php $this->endBody() ?>

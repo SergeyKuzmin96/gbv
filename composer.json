@@ -25,7 +25,8 @@
         "kartik-v/yii2-widget-datetimepicker": "^1.5",
         "rmrevin/yii2-fontawesome": "2.10.*",
         "sersid/yii2-font-awesome-asset": "^1.0",
-        "hail812/yii2-adminlte3": "~1.1"
+        "hail812/yii2-adminlte3": "~1.1",
+        "w3lifer/yii2-i18n-js": "^2.2"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

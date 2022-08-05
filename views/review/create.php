@@ -8,12 +8,10 @@
 
 /**
  * @var $this View
- * @var $model Review
- * @var $model_img Images
+ * @var $model Reviews
  */
 
-use app\models\Images;
-use app\models\Review;
+use app\models\Reviews;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
@@ -33,7 +31,7 @@ use yii\widgets\Pjax;
         ]); ?>
 
         <?= $form->field($model, 'message')->textarea() ?>
-        <?= $form->field($model_img, 'images[]')->fileInput(['multiple' => true, 'accept' => 'image/*']) ?>
+        <?= $form->field($model, 'images[]')->fileInput(['multiple' => true, 'accept' => 'image/*']) ?>
         <div class="form-group text-center">
             <?= Html::submitButton('Отправить', [
                 'class' => 'btn btn-primary'

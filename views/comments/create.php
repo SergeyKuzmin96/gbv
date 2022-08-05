@@ -1,8 +1,11 @@
 <?php
 
 
-/* @var $this View */
+/* @var $this View
+ * @var $model Comments
+ */
 
+use app\models\Comments;
 use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
@@ -14,6 +17,7 @@ use yii\widgets\Pjax;
         <?php
         Pjax::begin([
             'enablePushState' => false,
+            'timeout' => 10000,
         ]); ?>
         <?php
         $form = ActiveForm::begin([
@@ -21,9 +25,9 @@ use yii\widgets\Pjax;
         ]); ?>
 
         <?= $form->field($model, 'message')->textarea() ?>
-        <?= $form->field($model_img, 'images[]')->fileInput(['multiple' => true, 'accept' => 'image/*']) ?>
+        <?= $form->field($model, 'images[]')->fileInput(['multiple' => true, 'accept' => 'image/*']) ?>
         <div class="form-group text-center">
-            <?= Html::submitButton('Отправить', [
+            <?= Html::submitButton(Yii::t('app','Add Comment'), [
                 'class' => 'btn btn-primary'
             ]) ?>
         </div>
