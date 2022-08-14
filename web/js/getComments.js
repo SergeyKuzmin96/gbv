@@ -1,7 +1,6 @@
 let param = document.querySelector('meta[name="csrf-param"]').getAttribute("content");
 let token = document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 
-
 document.getElementById('reviews')
     .addEventListener('click', event => {
 
@@ -30,56 +29,57 @@ document.getElementById('reviews')
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     console.log(xhr.responseText)
                     let data = JSON.parse(xhr.responseText);
-                    console.log('=============================================')
-                    console.log(data)
-                    if (data.status) {
 
-                        let layout = '';
+                    if (data.status) {
+                        commentsBlock.classList.add('border');
+                        commentsBlock.classList.add('border-dark');
+
+                        let layout = `<h5><i>` + 'Комментарии: ' + `</i></h5><hr class="border-dark">`;
                         for (let i = 0; i < data.comments.length; i++) {
                             let images = '';
                             for (let j = 0; j < data.comments[i].commentsImages.length; j++) {
                                 images += `<li><img src="/images/` + data.comments[i].commentsImages[j].path + `" width="150" height="120"></li>`
                             }
                             layout += `
-                                    <div>
-                                          <p><strong>` + 'Автор' + `</strong>` + ' : ' + data.comments[i].users.email + `</p>
-                                          <p><strong>` + 'Комментарий' + `</strong>` + ' : ' + data.comments[i].message + `</p>
+                                    <div class = "comment_n">
+                                          <p><i>` + data.comments[i].date_add + `</i></p>
+                                          <p><i><strong>` + 'Автор' + `</strong></i>` + ' : ' + data.comments[i].users.email + `</p>
+                                          <p><i><strong>` + 'Комментарий' + `</strong></i>` + ' : ' + data.comments[i].message + `</p>
                                           <ul>
                                             ` + images + `
                                           </ul>
-                                          <hr>
+                                          <hr class="border-dark">
                                     </div>`;
                         }
 
                         if (data.counts) {
 
-                            commentsBlock.setAttribute('data-count',String(count))
-                            commentsBlock.insertAdjacentHTML('beforeend',layout)
+                            commentsBlock.setAttribute('data-count', String(count))
+                            commentsBlock.insertAdjacentHTML('beforeend', layout)
                             button.innerText = 'Показать следующие комментарии';
                         } else {
 
                             layout += data.message;
-                            commentsBlock.setAttribute('data-count',String(count))
-                            commentsBlock.insertAdjacentHTML('beforeend',layout)
+                            commentsBlock.setAttribute('data-count', String(count))
+                            commentsBlock.insertAdjacentHTML('beforeend', layout)
                             button.innerText = 'Скрыть комментарии';
                         }
 
-                    }else{
+                    } else {
                         if (data.counts) {
 
-                            commentsBlock.setAttribute('data-count',String(0))
+                            commentsBlock.setAttribute('data-count', String(0))
+                            commentsBlock.classList.remove('border')
+                            commentsBlock.classList.remove('border-dark')
                             commentsBlock.innerHTML = '';
                             button.innerText = data.message;
 
                         } else {
-                            commentsBlock.setAttribute('data-count',String(count))
-                            // commentsBlock.append(data.message);
-                            commentsBlock.insertAdjacentHTML('beforeend',data.message)
-
+                            commentsBlock.setAttribute('data-count', String(count))
+                            commentsBlock.insertAdjacentHTML('beforeend', data.message)
                             button.innerText = 'Скрыть сообщение';
-                        }}
-
-
+                        }
+                    }
                 }
             }
         }

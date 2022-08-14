@@ -23,9 +23,9 @@ return [
     'User' => 'Пользователь',
     'Update User' => 'Изменение пользователя',
     'User with such login and password was not found!' => 'Пользователь с таким логином и паролем не найден!',
-
+    'Home page of the site' => 'Главная страница сайта',
+    'You don\'t have enough rights' => 'У вас недостаточно прав',
     'Are you sure you want to delete this item?' => 'Вы уверены, что хотите удалить этот элемент?',
-
     'Users' => 'Пользователи',
     'Email' => 'Адрес электронной почты',
     'Password' => 'Пароль',

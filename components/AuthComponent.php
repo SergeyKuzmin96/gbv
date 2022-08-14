@@ -4,16 +4,13 @@ namespace app\components;
 
 use app\models\Users;
 use Yii;
-use yii\base\BaseObject;
 use yii\base\Exception;
 
-class AuthComponent extends BaseObject
+class AuthComponent
 {
-
     public function getModel($data = [])
     {
         $model = new Users();
-
         if ($data) {
             $model->load($data);
         }
@@ -24,7 +21,7 @@ class AuthComponent extends BaseObject
     /**
      * @param $model Users
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     public function createUser(Users $model): bool
     {
@@ -34,12 +31,13 @@ class AuthComponent extends BaseObject
             return false;
         }
 
-        $model->password_hash = $this->generatePasswordHash($model->password);
+        $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
 
         if (!$model->save()) {
             return false;
         }
-        Yii::$app->rbac->setUserRole($model->id);
+        $rbac = new RbacComponent();
+        $rbac->setUserRole($model->id);
         return true;
     }
 
@@ -57,16 +55,14 @@ class AuthComponent extends BaseObject
         }
 
         $password = $model->password;
-
         $model = $model::findOne(['email' => $model->email]);
+        $model->auth_key = Yii::$app->security->generateRandomString(40);
+        if (!($model->updateAttributes(['auth_key']))) {
+            $error = $model->errors;
+        }
 
-        $model->auth_key = $this->generateAuthKey();
-       if(!($model->updateAttributes(['auth_key']))){
-           $error = $model->errors;
-       }
-
-        if (!$this->checkPassword($password, $model->password_hash)) {
-            $model->addError('password', 'Неправильный пароль');
+        if (!Yii::$app->security->validatePassword($password, $model->password_hash)) {
+            $model->addError('email', Yii::t('app', 'User with such login and password was not found!'));
             return false;
         }
 
@@ -77,27 +73,4 @@ class AuthComponent extends BaseObject
         return true;
     }
 
-    /**
-     * @param $password
-     * @return string
-     * @throws Exception
-     */
-    private function generatePasswordHash($password): string
-    {
-        return Yii::$app->security->generatePasswordHash($password);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function generateAuthKey():string
-    {
-
-        return Yii::$app->security->generateRandomString(40);
-    }
-
-    public function checkPassword($password, $password_hash): bool
-    {
-        return Yii::$app->security->validatePassword($password, $password_hash);
-    }
 }

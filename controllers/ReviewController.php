@@ -12,8 +12,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
-use yii\web\HttpException;
-use yii\web\NotFoundHttpException;
+
 
 class ReviewController extends Controller
 {
@@ -49,80 +48,37 @@ class ReviewController extends Controller
     public function actionAll()
     {
         $component = new ReviewsComponent();
+        $countAll = $component->getCountReviews();
 
         if (Yii::$app->request->isAjax) {
 
             $data = Yii::$app->request->post();
             $count = ArrayHelper::getValue($data, 'count');
-            $countAll = $component->getCountReviews();
 
-            if($countAll >= $count || ($count - $countAll > 0 && $count - $countAll < 5)){
-                $reviews = $component->getReviewsByCountAjax($count,true);
+            $reviews = $component->getReviewsByCountAjax($count);
 
-                $data = [
-                    'status' => true,
-                    'reviews' => $reviews,
-                    'message' => Yii::t('app','Reviews received'),
-//                    'counts' => true,
-                ];
-                return Json::encode($data);
-            }else{
-
-                $data = [
-                    'status' => true,
-                    'reviews' => null,
-                    'message' => Yii::t('app','No more reviews'),
-//                    'counts' => true,
-                ];
-                return Json::encode($data);
+            for ($i = 0; $i < count($reviews); $i++) {
+                $reviews[$i]['canAddComment'] =
+                    (Yii::$app->user->id == $reviews[$i]['user_id']) ||
+                    Yii::$app->authManager->checkAccess(Yii::$app->user->id, 'admin');
             }
+            $data = [
+                'status' => true,
+                'reviews' => $reviews,
+                'message' => Yii::t('app', 'No more reviews'),
+                'count' => false
+            ];
+            if ($countAll > $count) {
+
+                $data['message'] = Yii::t('app', 'More reviews');
+                $data['count'] = true;
+            }
+            return Json::encode($data);
 
         }
-//        $reviews = $component->getReviewsByCount($count, false);
         $reviews = $component->getReviewsByPost();
 
-        return $this->render('all', ['reviews' => $reviews]);
-
+        return $this->render('all', ['reviews' => $reviews, 'countAll' => $countAll]);
     }
-
-//    /**
-//     * @throws Exception
-//     */
-//
-//    public function actionAll()
-//    {
-//        $component = new ReviewsComponent();
-//        if (Yii::$app->request->isAjax) {
-//            $data = Yii::$app->request->post();
-//            $count = ArrayHelper::getValue($data, 'count');
-//            $reviews = $component->getReviewsByCount($count,true);
-////            $reviews = $component->getReviewsByCountAsArray($count);
-//
-//            if ((count($reviews) % 5 == 0) && (count($reviews) > 0)) {
-//                $data = [
-//                    'status' => true,
-//                    'reviews' => $reviews,
-//                    'message' => 'Feedback received',
-//                    'counts' => true,
-//                ];
-//                return Json::encode($data);
-//            } else {
-//                $data = [
-//                    'status' => true,
-//                    'reviews' => $reviews,
-//                    'message' => 'Feedback received',
-//                    'counts' => false,
-//                ];
-//                return Json::encode($data);
-//            }
-//
-//        }
-//        $count = 0;
-//        $reviews = $component->getReviewsByCount($count, false);
-////        $reviews = $component->getReviewsByCountAsModel($count);
-//
-//        return $this->render('all', ['reviews' => $reviews]);
-//
-//    }
 
 }

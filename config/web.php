@@ -1,8 +1,10 @@
 <?php
 
 use app\components\AuthComponent;
+use app\components\RbacComponent;
 use app\models\Users;
 use kartik\datecontrol\Module;
+use yii\rbac\DbManager;
 
 $params = require __DIR__ . '/params.php';
 $db = file_exists(__DIR__ . '/db_local.php')
@@ -75,9 +77,6 @@ $config = [
         ]
     ],
     'components' => [
-        'i18nJs' => [
-            'class' => 'w3lifer\yii2-i18n-js\I18nJs',
-        ],
         'i18n' => [
             'translations' => [
                 'app*' => [
@@ -91,10 +90,8 @@ $config = [
         ],
 
         'authManager' => [
-            'class' => \yii\rbac\DbManager::class
+            'class' => DbManager::class
         ],
-        'rbac' => ['class' => \app\components\RbacComponent::class],
-
 
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -108,7 +105,7 @@ $config = [
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+//            'errorAction' => 'site/error',
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',

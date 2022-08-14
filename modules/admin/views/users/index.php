@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'attribute' => 'email',
-                'label' => Yii::t('app','Email'),
+                'label' => Yii::t('app', 'Email'),
                 'headerOptions' => ['style' => 'text-align: center'],
                 'contentOptions' => ['style' => 'text-align: center'],
             ],
@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ]),
                 'attribute' => 'date_add',
-                'label' => Yii::t('app','Date add'),
+                'label' => Yii::t('app', 'Date add'),
                 'headerOptions' => ['style' => 'text-align: center'],
                 'contentOptions' => ['style' => 'text-align: center'],
                 'format' => ['date', 'Y-MM-dd HH:mm:ss']
@@ -71,12 +71,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => ['style' => 'text-align: center'],
 
                 'template' => '{view} {update} {delete} {reviews} {comments}',
+                'visibleButtons' => [
+                    'delete' => function ($model, $key, $index) {
+                        return !Yii::$app->authManager->checkAccess($model->id, 'admin');
+                    }
+                ],
+
                 'buttons' => [
                     'reviews' => function ($url, $model, $key) {
-                        return Html::a(Yii::t('app','reviews'), $url);
+                        return Html::a(Yii::t('app', 'reviews'), $url);
                     },
                     'comments' => function ($url, $model, $key) {
-                        return Html::a(Yii::t('app','comments'), $url);
+                        return Html::a(Yii::t('app', 'comments'), $url);
                     },
                 ],
                 'urlCreator' => function ($action, Users $model, $key, $index, $column) {

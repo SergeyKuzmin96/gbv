@@ -2,11 +2,10 @@
 
 namespace app\components;
 
-use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\web\UploadedFile;
 
-abstract class CommentsSaveComponent extends BaseObject
+abstract class CommentsSaveComponent
 {
 
     public function getModel($data = [])
@@ -35,24 +34,5 @@ abstract class CommentsSaveComponent extends BaseObject
         }
         return false;
     }
-//    /**
-//     * @throws InvalidConfigException
-//     */
-//    public function createComment($model): bool
-//    {
-//        if (!$model->validate()) {
-//            return false;
-//        }
-//        if (!$model->save()) {
-//            return false;
-//        } else {
-//
-//            $component = \Yii::createObject(['class' => ImageLoaderComponent::class]);
-//            if ($component->loadImages($model)) {
-//
-//                $component->saveImages($model);
-//            }
-//        }
-//        return true;
-//    }
+
 }

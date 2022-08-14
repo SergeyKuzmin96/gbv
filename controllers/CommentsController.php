@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\CommentsComponent;
+use app\components\RbacComponent;
 use app\models\Comments;
 use app\models\Reviews;
 use Exception;
@@ -25,7 +26,8 @@ class CommentsController extends Controller
         if (!(Yii::$app->user->isGuest)) {
 
             $review = Reviews::find()->andFilterWhere(['id' => $id])->asArray()->one();
-            if (!(Yii::$app->rbac->canAddComment($review))) {
+            $rbac = new RbacComponent();
+            if (!($rbac->canAddComment($review))) {
 
                 throw new HttpException('403', Yii::t('app', 'You do not have enough rights to leave comments') . '!');
             }
@@ -71,7 +73,6 @@ class CommentsController extends Controller
                     'message' => Yii::t('app', 'Comments'),
                     'counts' => true,
                 ];
-                return Json::encode($data);
             } else {
 
                 if ($countAll == 0) {
@@ -82,7 +83,6 @@ class CommentsController extends Controller
                         'message' => Yii::t('app', 'This reviews has not yet been commented on'),
                         'counts' => false,
                     ];
-                    return Json::encode($data);
 
                 } else {
 
@@ -96,7 +96,6 @@ class CommentsController extends Controller
                             'message' => Yii::t('app', 'No more comments'),
                             'counts' => false,
                         ];
-                        return Json::encode($data);
 
                     } else {
                         $data = [
@@ -105,11 +104,10 @@ class CommentsController extends Controller
                             'message' => Yii::t('app', 'More comments'),
                             'counts' => true,
                         ];
-                        return Json::encode($data);
                     }
                 }
             }
-
+            return Json::encode($data);
         }
     }
 

@@ -2,7 +2,8 @@
 $params = require __DIR__ . '/params.php';
 return [
     'components' => [
-        'aliases'=>[
+
+        'aliases' => [
         ],
         'view' => [
             'theme' => [

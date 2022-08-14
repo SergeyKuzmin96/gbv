@@ -40,7 +40,7 @@ use yii\web\JqueryAsset;
     <?php endif; ?>
 
     <?php foreach ($reviews as $review): ?>
-        <div class="border border-success">
+        <div class="review border border-success">
             <?= Html::tag('p', Html::tag('strong', '№ ' . $review->id)) ?>
             <?= Html::tag('p', Html::tag('strong', Yii::t('app', 'Author')) . ' : ' . $review->users->email) ?>
             <p><?php echo Html::tag('strong', Yii::t('app', 'Review')) . ' : ' ?><?= Html::encode($review->message) ?> </p>
@@ -53,19 +53,16 @@ use yii\web\JqueryAsset;
                     </ul>
                 <?php endforeach; ?>
             <?php endif; ?>
-            <hr>
-            <div class="add_comment" data-content="<?= $review->id ?>">
                 <?php if ((\Yii::$app->authManager->checkAccess(\Yii::$app->user->id, 'admin')) || (Yii::$app->user->id == $review->users->id)): ?>
+
+                    <hr>
                     <?= Html::a(Yii::t('app', 'Add Comment'), ['comments/create', 'id' =>$review->id], ['class' => 'btn btn-xs btn-outline-primary']) ?>
+                    <hr>
 
                 <?php endif; ?>
-            </div>
             <br>
-            <hr>
-            <div class = "comments"  data-content="<?= $review->id ?>" data-count= "0">
+            <div class = "comments"  data-content="<?= $review->id ?>" data-count= "0"></div>
 
-            </div>
-            <br>
             <button class="btn get_comments btn-outline-info"
                     id="get_comments" data-attr="<?= $review->id ?>"
                     type="button">
@@ -79,7 +76,7 @@ use yii\web\JqueryAsset;
 </div>
 <?php Pjax::end(); ?>
 <br>
-<?php if (count($reviews) == 5): ?>
+<?php if ($countAll > 5): ?>
     <div class="container">
         <form class="form">
             <button class="btn btn-outline-info" id="review"
@@ -89,17 +86,11 @@ use yii\web\JqueryAsset;
 <?php endif; ?>
 <?php
 $this->registerJsFile(
-    '@web/js/test.js',
+    '@web/js/getReviews.js',
     ['depends' => 'yii\web\YiiAsset',
         'yii\bootstrap4\BootstrapAsset',
     ]
 );
-//$this->registerJsFile(
-//    '@web/js/reviewsAll.js',
-//    ['depends' => 'yii\web\YiiAsset',
-//        'yii\bootstrap4\BootstrapAsset',
-//    ]
-//);
 
 $this->registerJsFile(
     '@web/js/getComments.js',

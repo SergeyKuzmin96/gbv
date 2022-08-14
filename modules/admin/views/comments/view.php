@@ -1,5 +1,6 @@
 <?php
 
+use app\components\ImageLoaderComponent;
 use app\models\Comments;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -44,6 +45,21 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'message',
                 'label' => Yii::t('app', 'Comment')
+            ],
+            [
+                'attribute' => 'images',
+                'value' => function (Comments $model) {
+                    $comp = new ImageLoaderComponent();
+                    $images = '';
+                    foreach ($model->commentsImages as $image) {
+                        $images .= $comp->getOneImage($image->path, 100, 75);
+                    }
+                    if (empty($images)) {
+                        return 'Изображения отсутствуют';
+                    }
+                    return $images;
+                },
+                'format' => 'raw'
             ],
 
             [

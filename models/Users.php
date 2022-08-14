@@ -58,8 +58,8 @@ class Users extends ActiveRecord implements IdentityInterface
             [['auth_key'], 'string', 'max' => 150],
             ['password', 'required'],
             [['email', 'password'], 'trim'],
-            ['email','getUser', 'on' => self::SCENARIO_AUTH],
-            ['password', 'validatePassword','on' => self::SCENARIO_AUTH],
+            ['email', 'getUser', 'on' => self::SCENARIO_AUTH],
+            ['password', 'validatePassword', 'on' => self::SCENARIO_AUTH],
             ['password', 'match', 'pattern' => '(^(?xi)
                 (?=(?:.*[0-9]){2})
                 (?=(?:.*[a-z]){2})
@@ -103,18 +103,14 @@ class Users extends ActiveRecord implements IdentityInterface
 
     }
 
-    /**
-     * @throws InvalidConfigException
-     */
+
     public function validatePassword()
     {
-        if (!$this->hasErrors())
-        {
+        if (!$this->hasErrors()) {
 
             $user = $this->getUser();
-            $component = Yii::createObject(['class' => AuthComponent::class]);
 
-            if (!$component->checkPassword($this->password, $user->password_hash)) {
+            if (!Yii::$app->security->validatePassword($this->password, $user->password_hash)) {
                 $this->addError('email', Yii::t('app', 'User with such login and password was not found!'));
             }
         }
@@ -122,13 +118,12 @@ class Users extends ActiveRecord implements IdentityInterface
 
     public function getUser()
     {
-        if ( !Users::findOne(['email' => $this->email])){
+        if (!Users::findOne(['email' => $this->email])) {
             $this->addError('email', Yii::t('app', 'User with such login and password was not found!'));
             return false;
         }
         return Users::findOne(['email' => $this->email]);
     }
-
 
 
     /**

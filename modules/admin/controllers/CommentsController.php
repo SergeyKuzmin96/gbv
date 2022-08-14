@@ -5,6 +5,7 @@ namespace app\modules\admin\controllers;
 use app\components\CommentsComponent;
 use app\models\Comments;
 use app\modules\admin\searchModels\CommentsSearch;
+use Exception;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\web\Controller;
@@ -115,10 +116,12 @@ class CommentsController extends Controller
      * @param int $id ID
      * @return Response
      * @throws NotFoundHttpException|StaleObjectException if the model cannot be found
+     * @throws Exception
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+        $component = new CommentsComponent();
+        $component->deleteComment($id);
 
         return $this->redirect(['index']);
     }

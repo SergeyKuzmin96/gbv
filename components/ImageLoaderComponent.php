@@ -2,14 +2,14 @@
 
 namespace app\components;
 
-use yii\base\BaseObject;
+use Yii;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\web\UploadedFile;
 
-class ImageLoaderComponent extends BaseObject
+class ImageLoaderComponent
 {
     private function saveUploadedImage(UploadedFile $file): string
     {
@@ -57,6 +57,10 @@ class ImageLoaderComponent extends BaseObject
         return Html::img('/images/' . $path, ['width' => $width, 'height' => $height]);
     }
 
-
+    public function deleteImagesFromServer(array $images){
+        foreach ($images as $image) {
+            unlink(Yii::getAlias('@webroot/images/') . $image['path']);
+        }
+    }
 
 }

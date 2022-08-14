@@ -40,7 +40,7 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             Yii::$app->authManager->checkAccess(\Yii::$app->user->id, 'admin') ?(
-            ['label' => 'Панель администартора', 'url' => ['/admin/reviews']]
+            ['label' => Yii::t('app', 'Admin panel'), 'url' => ['/admin/admin/index']]
             ) : (''),
             Yii::$app->user->isGuest ? (
                 ['label' => 'Вход', 'url' => ['/authentication/signin']]

@@ -7,6 +7,7 @@ use app\models\Reviews;
 use app\modules\admin\searchModels\ReviewsSearch;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\Exception;
 use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -118,12 +119,13 @@ class ReviewsController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return Response
-     * @throws NotFoundHttpException if the model cannot be found
      * @throws StaleObjectException
+     * @throws Exception
      */
     public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+        $component = new ReviewsComponent();
+        $component->deleteReview($id);
 
         return $this->redirect(['index']);
     }

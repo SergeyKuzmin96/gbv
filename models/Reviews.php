@@ -79,12 +79,6 @@ class Reviews extends ActiveRecord
 
     }
 
-//    public function getCommentsImages()
-//    {
-//        return $this->hasMany(CommentsImages::className(), ['comment_id' => 'id'])
-//            ->via('reviewComments');
-//    }
-
     public function getImagesModel(): ReviewsImages
     {
         $model = new ReviewsImages();
@@ -134,8 +128,8 @@ class Reviews extends ActiveRecord
     }
 
 
-    public static function getListReviews():array
+    public static function getListReviews(): array
     {
-        return ArrayHelper::map(self::find()->all(),'id','message');
+        return ArrayHelper::map(self::find()->all(), 'id', 'message');
     }
 }

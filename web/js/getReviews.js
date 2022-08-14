@@ -22,22 +22,18 @@ button.addEventListener('click', evt => {
 
             console.log(data)
 
-            if(data.status){
+            if (data.status) {
                 let layout = '';
 
-                if(data.reviews == null){
-                    layout += data.message;
-                    button.style.visibility = "hidden";
-                }else{
-                    for (let i = 0; i < data.reviews.length; i++) {
-                        let images = '';
+                for (let i = 0; i < data.reviews.length; i++) {
+                    let images = '';
 
-                        for (let j = 0; j < data.reviews[i].reviewsImages.length; j++) {
-                            images += `<li><img src="/images/` + data.reviews[i].reviewsImages[j].path + `" width="150" height="120"></li>`
-                        }
+                    for (let j = 0; j < data.reviews[i].reviewsImages.length; j++) {
+                        images += `<li><img src="/images/` + data.reviews[i].reviewsImages[j].path + `" width="150" height="120"></li>`
+                    }
 
-                        layout += `
-                                     <div class="border border-success">
+                    layout += `
+                                     <div class="review border border-success">
                                           <p><strong>` + '№ ' + data.reviews[i].id + `</strong></p>
                                           <p><strong>` + 'Автор' + `</strong>` + ' : ' + data.reviews[i].users.email + `</p>
                                           <p><strong>` + 'Отзыв ' + `</strong>` + ' : ' + data.reviews[i].message + `</p>
@@ -46,25 +42,31 @@ button.addEventListener('click', evt => {
                                           </ul>
                                           <hr>`;
 
-                        layout += `<a href="comments/create?id=` + data.reviews[i].id + `" class="btn btn-xs btn-outline-primary">Добавить комментарий</a><br><hr>`;
+                    if (data.reviews[i].canAddComment) {
 
-                        layout +=`
+                        layout += `<a href="comments/create?id=` + data.reviews[i].id + `" class="btn btn-xs btn-outline-primary">Добавить комментарий</a><br><hr>`;
+                    }
+
+                    layout += `
                                     <div class="comments" data-content="` + data.reviews[i].id + `" data-count= "0"></div>
                                     <br>
                                     <button class="btn get_comments btn-outline-info"
                                              id="get_comments" 
                                              data-attr="` + data.reviews[i].id + `"
-                                             type="button">`+'Комментарии'+`</button>
+                                             type="button">` + 'Комментарии' + `</button>
                                     </div>
                                    
                                     <hr>
                                     <hr>`;
-
-                    }
-
-
                 }
-                reviewsBlock.insertAdjacentHTML('beforeend',layout);
+
+                if (!data.count) {
+                    layout += data.message;
+                    button.style.visibility = "hidden";
+                }
+
+
+                reviewsBlock.insertAdjacentHTML('beforeend', layout);
                 reviewsBlock.setAttribute('data-count', String(count));
             }
         }

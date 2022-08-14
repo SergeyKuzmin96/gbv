@@ -102,7 +102,7 @@ class UsersController extends Controller
     public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
-        if (Yii::$app->request->isPost){
+        if (Yii::$app->request->isPost) {
             $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password);
         }
 
@@ -125,8 +125,8 @@ class UsersController extends Controller
      */
     public function actionDelete(int $id): Response
     {
-        if ($id == 1){
-            throw new HttpException(403,Yii::t('app','Unable to delete user with admin rights'));
+        if (Yii::$app->authManager->checkAccess($id, 'admin')) {
+            throw new HttpException(403, Yii::t('app', 'Unable to delete user with admin rights'));
         }
         $this->findModel($id)->delete();
 

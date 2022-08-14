@@ -12,6 +12,7 @@ class CommentsSearch extends Comments
     public $date_to;
     public $user;
     public $review;
+
     /**
      * {@inheritdoc}
      */
@@ -19,7 +20,7 @@ class CommentsSearch extends Comments
     {
         return [
             [['id'], 'integer'],
-            [['message','user','review'], 'safe'],
+            [['message', 'user', 'review'], 'safe'],
             [['date_to', 'date_from'], 'date', 'format' => 'php:Y-m-d'],
         ];
     }
@@ -57,6 +58,7 @@ class CommentsSearch extends Comments
         ]);
 
         $dataProvider->setSort([
+            'defaultOrder' => ['id' => SORT_DESC],
             'attributes' => array_merge($dataProvider->getSort()->attributes, [
                 'user' => [
                     'asc' => ['users.email' => SORT_ASC],

@@ -58,6 +58,7 @@ class ReviewsSearch extends Reviews
         ]);
 
         $dataProvider->setSort([
+            'defaultOrder' => ['id' => SORT_DESC],
             'attributes' => array_merge($dataProvider->getSort()->attributes, [
                 'users' => [
                     'asc' => ['users.email' => SORT_ASC],

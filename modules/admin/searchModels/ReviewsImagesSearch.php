@@ -21,11 +21,11 @@ class ReviewsImagesSearch extends ReviewsImages
     /**
      * {@inheritdoc}
      */
-    public function rules():array
+    public function rules(): array
     {
         return [
             [['id'], 'integer'],
-            [['path','review'], 'safe'],
+            [['path', 'review'], 'safe'],
             [['date_to', 'date_from'], 'date', 'format' => 'php:Y-m-d'],
 
         ];
@@ -63,6 +63,7 @@ class ReviewsImagesSearch extends ReviewsImages
         ]);
 
         $dataProvider->setSort([
+            'defaultOrder' => ['id' => SORT_DESC],
             'attributes' => array_merge($dataProvider->getSort()->attributes, [
                 'review' => [
                     'asc' => ['reviews.message' => SORT_ASC],

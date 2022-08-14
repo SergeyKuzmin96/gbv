@@ -49,6 +49,10 @@ class UsersSearch extends Users
             'query' => $query,
         ]);
 
+        $dataProvider->setSort([
+            'defaultOrder' => ['id' => SORT_DESC],
+        ]);
+
         $this->load($params);
 
         if (!$this->validate()) {

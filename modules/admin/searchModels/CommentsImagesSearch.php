@@ -60,6 +60,7 @@ class CommentsImagesSearch extends CommentsImages
         ]);
 
         $dataProvider->setSort([
+            'defaultOrder' => ['id' => SORT_DESC],
             'attributes' => array_merge($dataProvider->getSort()->attributes, [
                 'comment' => [
                     'asc' => ['comments.message' => SORT_ASC],
